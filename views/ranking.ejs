@@ -1,0 +1,165 @@
+<%- include ("includes/header") %>
+
+<section>
+    <div>
+        <div>
+            <div id="page-contents">
+                <div>
+                    <%- include ("includes/left-sidebar") %>
+                </div>
+
+                <div style="margin-right: auto; margin-right: auto; width: 100%;">
+                    
+                    <div class="content_container"> 
+                        <div style="text-align: center; padding-top: 20px;">
+                            <a data-toggle="tab" style="color: white; font-size: 30px;">Ranking</a>
+                        </div>
+                        <br><br> 
+                        <ul id="showRanking" style="max-width: 1000px;"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    var isRanking = true;
+
+    function showRanking() {
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/getRanking", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                if (response.status == "success") {
+                    var html = "";
+
+                    for (var a = 0; a < response.data.length; a++) {
+                        var data = response.data[a];
+                        var ranking = a + 1;
+
+                        var color = "balck";
+                        if (window.user._id == data._id) {
+                            color = "rgb(30, 30, 30)";
+                        }
+                        html += '<li class="friends_list_item" id="user_' + data._id + '">';
+                            html += '<div id="friend_list_item" style="background-color:' + color + ';">';
+                                html += '<div class="f_name_pp" style="background-color:' + color + ';">';
+                                    html += '<h3 style="margin-left: 10px; padding-top: 5px; background-color:' + color + ';">' + ranking + '.</h3>';
+                                    html += '<figure style="background-color:' + color + ';">';
+                                        html += '<a href="/user/' + data._id + '" style="background-color:' + color + ';">';
+                                            html += '<img id="comment_pp" src="' + mainURL + '/' + data.profileImage +'">';
+                                        html += '</a>';
+                                    html += '</figure>';
+                                
+                                    html += '<h4 style="background-color:' + color + '; padding-top: 5px; margin-left: -10px;">';
+                                        html += '<a style="background-color:' + color + ';" href="/user/' + data._id + '" id="search_text">' + data.name + '</a>';
+                                    html += '</h4>';
+                                html += '</div>';
+
+                                html += '<div id="friend_action_div" style="display: flex; margin-right: 20px; background-color:' + color + '";>';
+                                        html += '<h4 style="background-color:' + color + ';">' + data.blue_points + '</h4>';
+                                        html += '<img style="background-color:' + color + '; width: 19px; height: 19px; margin-left: 7px; margin-top: 20px;" src="/public/images/blue_point.png">';
+                                html += '</div>';
+                            html += '<div>';
+                        html += '</li>';
+
+                        
+                    }
+
+                    document.getElementById("showRanking").innerHTML = html;
+                }
+            }
+        };
+        
+        var formData = new FormData();
+        ajax.send(formData);
+    }
+
+    function doAccept(self) {
+        var _id = self.getAttribute("data-id");
+
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/acceptFriendRequest", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                alert(response.message);
+
+                self.remove();
+
+                var status_id = "friend_status_" + _id;
+                document.getElementById(status_id).innerHTML = '&nbsp' + '<h4 style="color: rgb(0, 162, 255);">(Friend)</h4>';
+            }
+        };
+
+        var formData = new FormData();
+        formData.append("accessToken", localStorage.getItem("accessToken"));
+        formData.append("_id", _id);
+        ajax.send(formData);
+    }
+
+    function sendFriendRequest(self) {
+        var _id = self.getAttribute("data-id");
+
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/sendFriendRequest", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                alert(response.message);
+
+                self.remove();
+                var div_id = "action_div_" + _id;
+                document.getElementById(div_id).innerHTML = '<a id="search_action" href="javascript:void(0);" data-id="' + _id + '" onclick="doUnfriend(this);" class="add-butn unfriend-btn">Unfriend</a>';
+
+                var status_id = "friend_status_" + _id;
+                document.getElementById(status_id).innerHTML = '&nbsp' + '<h4 style="color: rgb(0, 162, 255);">(Pending)</h4>';
+            }
+        };
+
+        var formData = new FormData();
+        formData.append("accessToken", localStorage.getItem("accessToken"));
+        formData.append("_id", _id);
+
+        ajax.send(formData);
+    }
+
+    function doUnfriend(self) {
+        var _id = self.getAttribute("data-id");
+
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/unfriend", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                alert(response.message);
+
+                self.remove();
+                var div_id = "action_div_" + _id;
+                document.getElementById(div_id).innerHTML = '<a id="search_action" href="javascript:void(0);" data-id="' + _id + '" onclick="sendFriendRequest(this);" class="add-butn">Add Friend</a>';
+
+                var status_id = "friend_status_" + _id;
+                document.getElementById(status_id).innerHTML = '';
+            }
+        };
+
+        var formData = new FormData();
+        formData.append("accessToken", localStorage.getItem("accessToken"));
+        formData.append("_id", _id);
+        ajax.send(formData);
+    }
+
+
+</script>
+
+<%- include ("includes/footer") %>

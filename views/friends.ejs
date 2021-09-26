@@ -1,0 +1,113 @@
+<%- include ("includes/header") %>
+
+<section>
+    <div>
+        <div>
+            <div id="page-contents">
+                <div>
+                    <%- include ("includes/left-sidebar") %>
+                </div>
+
+                <div style="margin-right: auto; margin-right: auto; width: 100%;">
+                    
+                    <div class="content_container"> 
+                        <div style="text-align: center; padding-top: 20px;">
+                            <a data-toggle="tab" style="color: white; font-size: 30px;">Friends</a>
+                        </div>
+                        <br><br> 
+                        <ul id="friends" style="max-width: 1000px;"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    var isFriends = true;
+
+    function showFriends() {
+        var html = "";
+
+        for (var a = 0; a < window.user.friends.length; a++) {
+            var data = window.user.friends[a];
+
+            html += '<li class="friends_list_item" id="user_' + data._id + '">';
+                html += '<div id="friend_list_item">';
+                    html += '<div class="f_name_pp">';
+                        html += '<figure>';
+                            html += '<a href="/user/' + data._id + '">';
+                                html += '<img id="comment_pp" src="' + mainURL + '/' + data.profileImage +'">';
+                            html += '</a>';
+                        html += '</figure>';
+                    
+                        html += '<h4>';
+                            html += '<a href="/user/' + data._id + '" id="search_text">' + data.name + '</a>';
+                        html += '</h4>';
+                    html += '</div>';
+
+                    html += '<div id="friend_action_div">';
+                            if (!data.sentByMe && data.status == "Pending") {
+                                html += '<a id="search_action" style="margin-left: 20px;" href="javascript:void(0);" data-id="' + data._id + '" onclick="doAccept(this);" class="add-butn accept">Accept</a>';
+                            }
+                            html += '<a id="search_action" href="javascript:void(0);" data-id="' + data._id + '" onclick="doUnfriend(this);" class="add-butn unfriend">Unfriend</a>';
+                    html += '</div>';
+                html += '<div>';
+            html += '</li>';
+        }
+
+        document.getElementById("friends").innerHTML = html;
+    }
+
+    function doAccept(self) {
+        var _id = self.getAttribute("data-id");
+
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/acceptFriendRequest", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                alert(response.message);
+
+                self.remove();
+
+            }
+        };
+
+        var formData = new FormData();
+        formData.append("accessToken", localStorage.getItem("accessToken"));
+        formData.append("_id", _id);
+        ajax.send(formData);
+    }
+
+    function doUnfriend(self) {
+        var _id = self.getAttribute("data-id");
+
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/unfriend", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                alert(response.message);
+
+                self.remove();
+
+                var user_id = "user_" + _id;
+                document.getElementById(user_id).remove();
+            }
+        };
+
+        var formData = new FormData();
+        formData.append("accessToken", localStorage.getItem("accessToken"));
+        formData.append("_id", _id);
+        ajax.send(formData);
+    }
+
+
+</script>
+
+<%- include ("includes/footer") %>

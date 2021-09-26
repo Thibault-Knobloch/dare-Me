@@ -1,0 +1,94 @@
+#friend_list_item {
+    display: inline-block;
+    width: 100%;
+    border-top: gray 1px dotted;
+    border-bottom: gray 1px dotted;
+    min-width: 400px;
+}
+
+.f_name_pp {
+    display: flex;
+    float: left;
+}
+
+#friend_action_div {
+    float: right;
+    padding-right: 20px;
+}
+
+.friend_action_div {
+    float: right;
+    padding-right: 20px;
+}
+
+#friends {
+    width: 65%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#showRanking {
+    width: 65%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#showUsers {
+    width: 65%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 1000px) {
+    #friends {
+        width: 85%;
+        margin-left: 0px;
+    }
+    #showUsers {
+        width: 85%;
+        margin-left: 0px;
+    }
+    #showRanking {
+        width: 85%;
+        margin-left: 0px;
+    }
+    
+}
+@media (max-width: 850px) {
+    #friends {
+        width: 95%;
+        margin-left: -45px;
+    }
+    #showUsers {
+        width: 95%;
+        margin-left: -45px;
+    }
+    #showRanking {
+        width: 95%;
+        margin-left: -45px;
+    }
+}
+
+#goal {
+    border: rgb(158, 196, 22) solid 2px;
+    border-radius: 20px;
+    padding-left: 10px;
+    height: 25px;
+}
+
+#goal:focus {
+    outline: none;
+}
+
+#dareID {
+    border: rgb(158, 196, 22) solid 2px;
+    border-radius: 20px;
+    padding-left: 10px;
+    height: 25px;
+}
+
+#dareID:focus {
+    outline: none;
+}
+
+

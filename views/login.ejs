@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Social Network</title>
+
+        <link rel="stylesheet" href="/public/css/login.css">
+    </head>
+
+    <body>
+        <%- include ("includes/header") %>
+
+        <div id="login_container_div">
+            <div id="login_div">
+                <h2 id="login_text">Login</h2>
+
+                <form onsubmit="return doLogin(this);">
+                    <div>
+                        <label class="login_labels">Email:</label>
+                        <input class="login_inputs" type="email" required name="email"/>
+                    </div>
+
+                    <div>
+                        <label class="login_labels">Password:</label>
+                        <input class="login_inputs" type="password" required name="password"/>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button name="submit" type="submit" id="login_button">
+                            <span id="login_button_text">Login</span>
+                        </button>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px; margin-bottom: 15px;">
+                        <a href="/signup" style="color: rgb(72, 209, 68);">Don't have an account yet?</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="login_copyright_div" style="margin-left: 10px; position: absolute; bottom: 10px;">
+            <div>
+                Dare-Me &copy; <%= new Date().getFullYear() %>
+            </div>
+        </div>
+
+        <script>
+            function doLogin(form) {
+                form.submit.setAttribute("disabled", "disabled");
+                form.submit.innerHTML = "<span>Loading...</span>";
+
+                var ajax = new XMLHttpRequest();
+                ajax.open("POST", "/login", true);
+
+                ajax.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        form.submit.removeAttribute("disabled");
+                        form.submit.innerHTML = "<span>Login</span>";
+
+                        var response = JSON.parse(this.responseText);
+
+                        if (response.status == "success") {
+                            var accessToken = response.accessToken;
+                            localStorage.setItem("accessToken", accessToken);
+
+                            if (response.profileImage == "") {
+                                window.location.href = "/updateProfile";
+                            } else {
+                                window.location.href = "/";
+                            }
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                };
+
+                ajax.send(new FormData(form));
+                return false
+            }
+            
+        </script>
+
+    </body>
+
+</html>

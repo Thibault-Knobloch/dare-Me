@@ -1,0 +1,579 @@
+<html>
+    <head>
+        <title>Social Network</title>
+
+        <link rel="stylesheet" href="/public/css/updateProfile.css">
+        <link rel="stylesheet" href="/public/css/header.css">
+        <link rel="stylesheet" href="/public/css/footer.css">
+        <link rel="stylesheet" href="/public/css/sidebar.css">
+        <link rel="stylesheet" href="/public/css/index.css">
+        <link rel="stylesheet" href="/public/css/friends.css">
+        <link rel="stylesheet" href="/public/css/search.css">
+        <link rel="stylesheet" href="/public/css/messages.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+
+    <body>
+        <% 
+            months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]; 
+        %> 
+        <!--
+        <div id="top_right">
+            <a onClick="stopAnimation();" id="text_stop" style="font-size: 12px; font-family: Comic Sans MS; cursor: pointer; cursor: hand; position: absolute; right: 20px; display: none;">*Stop This*</a>
+            <a onClick="startAnimation();" id="text_start" style="font-size: 12px; font-family: Comic Sans MS; cursor: pointer; cursor: hand; position: absolute; right: 20px;">*Start Again*</a>
+        </div>
+        -->
+        <div id="header_container">
+            <div id="header_logo_div" class="header_logo_div">
+                <a href="/" style="text-decoration:none;">
+                    <div id="logo-img-div">
+                        <img id="logo-img" src="/public/images/logo_final.png">
+                    </div>
+                    <!-- 
+                    <div id="logo-text-div">
+                        <span id="logo-text"><b>Dare-Me Network</b></span>
+                    </div>
+                -->
+                </a>
+            </div>
+
+            <div id="header_list_div">
+                <ul id="main-menu">
+                </ul>
+
+                <ul class="setting">
+                    <li id="header-search-icon">
+                        
+                        <div id="search_div" class="ti-search" style="display: none;">
+                            <form onsubmit="return false;" class="form-search">
+                                <input type="type" placeholder="Search Friend" id="search_input">
+                                <button data-ripple type="button" onclick="onSearch(this);" id="search_button">
+                                    <span id="search_button_text">Search</span>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+
+                </ul>
+                
+            </div>
+        </div>
+
+    <script>
+        var mainURL = "http://localhost:3000";
+
+        userWantsAnimation = false;
+
+        var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        function onSearch(button) {
+            window.location.href = "/search/" + button.previousElementSibling.value;
+        }
+
+        function toggleSearchDiv() {
+            var x = document.getElementById("search_div");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+
+        function createLikesSection(data) {
+            var isLiked = false;
+
+            for (var b = 0; b < data.likers.length; b++) {
+                var liker = data.likers[b];
+                var like_color = "white";
+                if (liker._id == window.user._id) {
+                    isLiked = true;
+                    like_color = "rgb(72, 209, 68)";
+                    break
+                }
+            }
+
+            var html = "";
+
+            html += '<div class="like_section_div">';
+                html += '<ul>';
+                    html += '<div id="like_div" style="text-align: center;">';
+                    html += '<li>';
+                        var className = "";
+                        if (isLiked) {
+                            className = "like";
+                        } else {
+                            className = "none";
+                        }
+
+                        html += '<span class="' + className + '" onclick="toggleLikePost(this);" data-id="' + data._id + '" style="display: flex;">';
+                            html += '<span class="material-icons" style="padding-left: 30px; color:' + like_color + ';" id="like_' + data._id + '">thumb_up</span>';
+                            html += '<div class="post_meta_number_div">';
+                                html += '<ins class="post_meta_number">' + data.likers.length + '</ins>';
+                            html += '</div>';
+                        html += '</span>';
+                    html += '</li>';
+                    html += '</div>';
+
+                    html += '<div id="comment_div" style="text-align: center;">';
+                    html += '<li>';
+                        html += '<span class="comment" title="Comments" style="display: flex;">';
+                            html += '<span class="material-icons" onclick="showCommentArea(this);" data-id="' + data._id + '" style="padding-left: 30px; color: white;">comment</span>';
+                            html += '<div class="post_meta_number_div">';
+                                html += '<ins class="post_meta_number">' + data.comments.length + '</ins>';
+                            html += '</div>';
+                        html += '</span>';
+                    html += '</li>';
+                    html += '</div>';
+
+                    html += '<div id="share_div" style="text-align: center;">';
+                    html += '<li>';
+                        html += '<span class="share" onclick="sharePost(this);" data-id="' + data._id + '" style="display: flex;">';
+                            html += '<span class="material-icons" style="padding-left: 30px; color: white;">share</span>';
+                            html += '<div class="post_meta_number_div">';
+                                html += '<ins class="post_meta_number">' + data.shares.length + '</ins>';
+                            html += '</div>';
+                        html += '</span>';
+                    html += '</li>';
+                    html += '</div>';
+                html += '</ul>';
+            html += '</div>'
+
+            return html;
+        }
+
+        function showCommentArea(self) {
+            var _id = self.getAttribute("data-id");
+            commentSection = document.getElementById(_id);
+
+            if (commentSection.style.display == "none") {
+                commentSection.style.display = "";
+            } else {
+                commentSection.style.display = "none";
+            }
+
+            var div_id = "dares_list_" + _id;
+
+            dare_meta = document.getElementById(div_id);
+            dare_meta.style.display = "none";
+        }
+
+        function sharePost(self) {
+            if (confirm("Are you sure you want to share this post?")) {
+                var _id = self.getAttribute("data-id");
+
+                var ajax = new XMLHttpRequest();
+                ajax.open("POST", "/sharePost", true);
+
+                ajax.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var response = JSON.parse(this.responseText);
+
+                        alert(response.message);
+
+                        if (response.status == "success") {
+                            self.className = "like" //to make icon light up, ill find own way to do this 
+
+                            var shares = parseInt(self.querySelector("ins").innerHTML);
+                            shares ++;
+                            self.querySelector("ins").innerHTML = shares;
+
+                            showNewsfeed();
+                        }
+                    }
+                };
+
+                var formData = new FormData();
+                formData.append("accessToken", localStorage.getItem("accessToken"));
+                formData.append("_id", _id);
+                ajax.send(formData);
+            }
+        }
+
+        function toggleLikePost(self) {
+            var _id = self.getAttribute("data-id");
+
+            var ajax = new XMLHttpRequest();
+            ajax.open("POST", "/toggleLikePost", true);
+
+            ajax.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var response = JSON.parse(this.responseText);
+                    console.log(response.status);
+
+                    if (response.status == "success") {
+                        self.className = "like";
+
+                        var likes = parseInt(self.querySelector("ins").innerHTML);
+                        likes++;
+                        self.querySelector("ins").innerHTML = likes;
+                        document.getElementById("like_" + _id).style.color = "rgb(72, 209, 68)";
+                    }
+
+                    if (response.status == "unliked") {
+                        self.className = "none";
+
+                        var likes = parseInt(self.querySelector("ins").innerHTML);
+                        likes--;
+                        self.querySelector("ins").innerHTML = likes;
+                        document.getElementById("like_" + _id).style.color = "white";
+                    }
+                    
+                    if (response.status == "error") {
+                        alert(response.message);
+                    }
+                }
+            };
+
+            var formData = new FormData();
+            formData.append("accessToken", localStorage.getItem("accessToken"));
+            formData.append("_id", _id);
+
+            ajax.send(formData);
+        }
+
+        function createCommentsSection(data) {
+            var html = "";
+
+            html += '<div class="comment-area" id="' + data._id + '" style="display: none;">';
+                html += '<ul style="max-height: 300px; overflow-y: scroll;">';
+
+                    for (var b = 0; b < data.comments.length; b++) {
+                        var comment = data.comments[b];
+                        html += '<div style="border-bottom: grey solid 2px; padding-top: 10px;">';
+                        html += '<li>';
+                            html += '<div style="display: flex;">';
+                                html += '<div>';
+                                    html += '<img id="comment_pp" src="' + mainURL + '/' + comment.user.profileImage + '">';
+                                html += '</div>';
+
+                                html += '<div style="margin-left: 10px;">';
+                                    html += '<h5 style="margin-top: 0px;"><a href="/user/' + comment.user._id + '">' + comment.user.name + '</a></h5>';
+
+                                    var createdAt = new Date(comment.createdAt);
+                                    var date = createdAt.getDate() + "";
+                                    date = date.padStart(2, "0") + " " + months[createdAt.getMonth()] + ", " + createdAt.getFullYear();
+                                    html += '<div style="margin-top: -20px;">';
+                                        html += '<span style="font-size: 12px; color: rgb(141,141,141);">' + date + '</span>';
+                                    html += '</div>';
+
+                                html += '</div>';
+
+                                html += '<div>';
+                                    html += '<a href="javascript:void(0);" data-post-id="' + data._id + '" data-comment-id="' + comment._id + '" onclick="prepareToReply(this);" title="Reply"><span class="material-icons" style="margin-left: 20px;">reply</span></a>';
+                                html += '</div>';
+
+                            html += '</div>';
+
+                            html += '<p>' + comment.comment + '</p>';
+
+                            html += '<ul>';
+
+                                for (var c = 0; c < comment.replies.length; c++) {
+                                    var reply = comment.replies[c];
+
+                                    html += '<li>';
+                                        html += '<div>';
+                                            html += '<img id="comment_pp" src="' + mainURL + '/' + reply.user.profileImage + '">';
+                                        html += '</div>';
+
+                                        html += '<div>';
+                                            html += '<div>';
+                                                hmtl += '<h5><a href="/">' + reply.user.name + '</a></h5>';
+
+                                                var createdAt = new Date(reply.createdAt);
+                                                var date = createdAt.getDate() + "";
+                                                date = date.padStart(2, "0") + " " + months[createdAt.getMonth()] + ", " + createdAt.getFullYear();
+                                                
+                                                html += '<span>' + date + '</span>';
+                                            html += '</div>';
+                                            html += '<p>' + reply.reply + '</p>';
+                                        html += '</div>';
+                                    html += '</li>';
+                                }
+                            html += '</ul>';
+
+                        html += '</li>';
+
+                        html += '</div>';
+                    }
+                html += '</ul>';
+                
+                html += '<ul style="margin-left: 15px;">';
+                    html += '<li style="display: flex; auto;">';
+                        html += '<div style="border-top: grey dotted 2px; border-bottom: grey dotted 2px; display: flex; padding-top: 12px;">';
+                            html += '<div>';
+                                html += '<img id="comment_pp" src="' + mainURL + '/' + window.user.profileImage + '" style="margin-right: 20px; margin-top: 4px;">';
+                            html += '</div>';
+                            html += '<div>';
+                                html += '<form method="post" onsubmit="return doPostComment(this);" style="display: flex;">';
+                                    html += '<input type="hidden" name="_id" value="' + data._id + '">';
+                                    html += '<textarea name="comment" placeholder="Post your comment" style="outline: none;"></textarea>';
+                                    html += '<div style="margin-left: 20px; margin-top: 7px;">';
+                                    html += '<button id="comment_button" type="submit">Post</button>';
+                                    html += '</div>'
+                                html += '</form>';
+                            html += '</div>';
+                        html += '</div>';
+                    html += '</li>';
+                html += '</ul>';
+            html += '</div>';
+
+            return html;
+        }
+
+        function doPostComment(form) {
+            var ajax = new XMLHttpRequest();
+            ajax.open("POST", "/postComment", true);
+
+            ajax.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var response = JSON.parse(this.responseText);
+
+                    alert(response.message);
+
+                    if (response.status == "success") {
+                        form.comment.value = "";
+                    }
+                }
+            };
+
+            var formData = new FormData(form);
+            formData.append("accessToken", localStorage.getItem("accessToken"));
+            ajax.send(formData);
+
+            return false;
+        }
+
+        function toggleReplyComment() {
+            var x = document.getElementById("replyComment");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+
+        function prepareToReply(self) {
+            $("#replyComment input[name='postID']").val(self.getAttribute("data-post-id"));
+            $("#replyComment input[name='commentID']").val(self.getAttribute("data-comment-id"));
+            toggleReplyComment();
+        }
+
+        function doPostReply(form) {
+            var ajax = new XMLHttpRequest();
+            ajax.open("POST", "/postReply", true);
+
+            ajax.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var response = JSON.parse(this.responseText);
+                    alert(response.message);
+
+                    if (response.status == "success") {
+                        form.reply.value = "";
+                        toggleReplyComment();
+                    }
+                }
+            };
+
+            var formData = new FormData(form);
+            formData.append("accessToken", localStorage.getItem("accessToken"));
+            ajax.send(formData);
+
+            return false;
+        }
+
+        var post_dare = true;
+        
+        function showAddPost() {
+            if (localStorage.getItem("accessToken")) {
+                var html = "";
+
+                html += '<div class="post_box_container">';
+                    html += '<div class="new-postbox" style="border-radius: 30px;">';
+                        
+                            html += '<form method="post" id="form-add-post" onsubmit="return doPost(this);" style="border-radius: 30px;">';
+                                html += '<div class="pp-input_container" style="border-radius: 30px;">';
+                                    html += '<div id="top_inner_div">';
+                                        html += '<div id="top_inner_pp">';
+                                            html += '<figure>';
+                                                html += '<img id="post_box_pp" src="' + mainURL + '/' + window.user.profileImage + '">';
+                                            html += '</figure>';
+                                        html += '</div>';
+
+                                        html += '<input name="type" type="hidden" value="post">';
+                                        html += '<div id="top_inner_textarea">';
+                                            html += '<textarea id="post_box_text_input" rows="2" name="caption" placeholder="What dares for you today, ' + window.user.name + '?" required></textarea>';
+                                        html += '</div>';
+                                        
+                                        html += '<div style="margin-top: 15px; margin-bottom: 10px; margin-right: 15px; width: 80px;">';
+                                        if (post_dare == true) {
+                                            var dare_checked = "checked";
+                                            var completed_checked = "";
+
+                                            html += '<div id= style="width: 100%;">';
+                                                html += '<label style="display: block; margin-bottom: 5px;" for="goal">GOAL:</label>';
+                                                html += '<div style="display: flex;">';
+                                                    html += '<input style=" display: block; width: 45px;" type="number" id="goal" name="goal" min=0 required>';
+                                                    html += '<img style="width: 25px; height: 25px; margin-left: 7px; margin-bottom: 0px;" src="/public/images/blue_point.png">';
+                                                html += '</div>';
+                                            html += '</div>';
+                                        } else if (post_dare == false) {
+                                            var dare_checked = "";
+                                            var completed_checked = "checked";
+
+                                            html += '<div id= style="width: 100px; border-radius: 60px;">';
+                                                html += '<label style="display: block; margin-bottom: 5px;" for="reference">DARE ID</label>';
+                                                html += '<input style="display: block; width: 80px;" type="text" id="dareID" name="dareID" required>';
+                                            html += '</div>';
+                                        }
+                                        html += '</div>';
+                                        
+                                    html += '</div>';
+                                    
+                                html += '</div>';
+
+
+                                html += '<div style="width:75%; border-bottom: rgb(95, 95, 95) 2px solid; margin-right: auto; margin-left: auto;"></div>';
+                                    html += '<div class="attachements">';
+                                        html += '<ul style="border-radius: 30px; display: flex;">';
+
+                                            html += '<li class="add_post_li">';
+                                                html += '<div style="flex: 1;">';
+                                                    html += '<ul style="width: 120px; text-align: left; margin-left: -40px;">';
+                                                        html += '<li style="display: block; margin-left: -40px;">';
+                                                            html += '<label><input class="radio_input" type="radio" name="post_type" value="dare"' + dare_checked + ' onclick="makeDare();"/>Post a dare</label>';
+                                                        html += '</li>';
+
+                                                        html += '<li style="display: block; margin-left: -40px;">';
+                                                            html += '<label><input class="radio_input" type="radio" name="post_type" value="completed" ' + completed_checked + ' onclick="makeCompleted();"/>Post completed dare</label>';
+                                                        html += '</li>';
+                                                    html += '</ul>';
+                                                html += '</div>';
+                                            html += '<li>';
+
+                                            html += '<li class="add_post_li">';
+                                                html += '<label>'
+                                                html += '<input id="post_file_input" type="file" name="image" accept="image/*" onchange="previewPostImage(this);">';
+                                                html += '<span class="material-icons" id="add_pic_icon">image</span></label>'
+                                            html += '</li>';
+
+                                            html += '<li class="add_post_li">';
+                                                html += '<label>'
+                                                html += '<input id="post_file_input" type="file" name="video" accept="video/*" onchange="previewPostVideo(this);">';
+                                                html += '<span class="material-icons" id="add_vid_icon">video_library</span></label>'
+                                            html += '</li>';
+
+                                            html += '<li class="add_post_li">';
+                                            html += '<button id="post_button" type="submit">Post</button>';
+                                            html += '</li>';
+                    
+                                        html += '</ul>';
+
+                                        html += '<ul style="border-radius: 50px; position: relative;">';
+                                            html += '<li class="add_post_li">';
+                                                html += '<img id="post-img-preview" style="display: none;">';
+                                            html += '</li>';
+
+                                            html += '<li class="add_post_li">';
+                                                html += '<video id="post-video-preview" controls style="display: none;">';
+                                            html += '</li>';
+                                            
+                                            html += '<div style="display: inline-block; position: absolute; top: -5px; right: 5%;">';
+                                                html += '<span id="post-preview-cross" style="display: none; font-size:35px; color: white;" class="material-icons" onclick="emptyFileInput();">close</span>';
+                                            html += '<div>';
+
+                                        html += '</ul>';
+                                        
+
+                                    html += '</div>';
+                            html += '</form>';
+                        
+                    html += '</div>';
+                html += '</div>';
+
+
+                document.getElementById("add-post-box").innerHTML = html;
+            }
+        }
+
+        function makeDare() {
+            post_dare = true;
+            showAddPost();
+        }
+
+        function makeCompleted() {
+            post_dare = false;
+            showAddPost();
+        }
+
+        function emptyFileInput() {
+            document.getElementById("post-img-preview").style.display = "none";
+            document.getElementById("post-img-preview").setAttribute("src", "");
+            document.getElementById("post-video-preview").style.display = "none";
+            document.getElementById("post-video-preview").setAttribute("src", "");
+            document.getElementById("post-preview-cross").style.display = "none";
+        }
+
+        function previewPostImage(self) {
+            document.getElementById("post-video-preview").style.display = "none";
+            document.getElementById("post-video-preview").setAttribute("src", "");
+            document.getElementById("post-preview-cross").style.display = "";
+            var file = self.files;
+            if (file.length > 0) {
+                var fileReader = new FileReader();
+
+                fileReader.onload = function(event) {
+                    document.getElementById("post-img-preview").style.display = "";
+                    document.getElementById("post-img-preview").setAttribute("src", event.target.result);
+                    document.getElementById("post-preview-cross").style.display = "";
+                };
+
+                fileReader.readAsDataURL(file[0]);
+            }
+        }
+
+        function previewPostVideo(self) {
+            document.getElementById("post-img-preview").style.display = "none";
+            document.getElementById("post-img-preview").setAttribute("src", "");
+            document.getElementById("post-preview-cross").style.display = "";
+            var file = self.files;
+            if (file.length > 0) {
+                var fileReader = new FileReader();
+
+                fileReader.onload = function(event) {
+                    document.getElementById("post-video-preview").style.display = "";
+                    document.getElementById("post-video-preview").setAttribute("src", event.target.result);
+                };
+
+                fileReader.readAsDataURL(file[0]);
+            }
+        }
+
+        function showDareDiv(self) {
+            var _id = self.getAttribute("data-id");
+            var div_id = "dares_list_" + _id;
+
+            dare_meta = document.getElementById(div_id);
+
+            if (dare_meta.style.display == "none") {
+                dare_meta.style.display = "";
+                dare_meta.style.position = "absolute"
+            } else {
+                dare_meta.style.display = "none";
+            }
+
+            commentSection = document.getElementById(_id);
+            commentSection.style.display = "none";
+        }
+
+    </script>
+
+    <style>
+        #post-img-preview,
+        #post-video-preview {
+            height: 300px;
+            width: 300px;
+            object-fit: cover;
+        }
+    </style>
+    

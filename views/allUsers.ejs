@@ -1,0 +1,217 @@
+<%- include ("includes/header") %>
+
+<section>
+    <div>
+        <div>
+            <div id="page-contents">
+                <div>
+                    <%- include ("includes/left-sidebar") %>
+                </div>
+
+                <div style="margin-right: auto; margin-right: auto; width: 100%;">
+                    
+                    <div class="content_container"> 
+                        <div style="text-align: center; padding-top: 20px;">
+                            <a data-toggle="tab" style="color: white; font-size: 30px;">All Users</a>
+                        </div>
+                        <br><br> 
+                        <ul id="showUsers" style="max-width: 1000px;"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    var isAllUsers = true;
+
+    function showAllUsers() {
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/getAllUsers", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                if (response.status == "success") {
+                    var html = "";
+
+                    for (var a = 0; a < response.data.length; a++) {
+                        var data = response.data[a];
+
+                        var isFriend = false;
+                        var showAccept = false;
+                        var isMe = false;
+                        var accepted = false;
+
+                        for (var b = 0; b < window.user.friends.length; b++) {
+                            var friend = window.user.friends[b];
+
+                            if (friend._id == data._id) {
+                                isFriend = true;
+                                accepted = true;
+                                if (friend.status == "Pending") {
+                                    accepted = false;
+                                    if (friend.sentByMe !== true) {
+                                        showAccept = true;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+
+                        if (window.user._id == data._id) {
+                            isMe = true;
+                        }
+
+                        html += '<li class="friends_list_item">';
+                            html += '<div id="friend_list_item">';
+                                html += '<div class="f_name_pp">';
+                                    html += '<figure style="z-index: 10;">';
+                                        html += '<a href="/user/' + data._id + '">';
+                                            html += '<img id="comment_pp" src="' + mainURL + '/' + data.profileImage +'">';
+                                        html += '</a>';
+                                    html += '</figure>';
+
+                                    html += '<ul style="display: flex; flex-direction: column; margin-left: -85px;">';
+                                        html += '<li style="text-align: left;">';
+                                            html += '<h4>';
+                                                html += '<a href="/user/' + data._id + '" id="search_text">' + data.name + '</a>';
+                                            html += '</h4>';
+                                        html += '</li>';
+
+                                        html += '<li style="height: 10px; margin-top: -55px;" id="friend_status_' + data._id + '">';
+                                            if (isMe !== true) {
+                                                if (isFriend == true) {
+                                                    if (accepted == true) {
+                                                        html += '&nbsp' + '<h4 style="color: rgb(0, 162, 255);">(Friend)</h4>';
+                                                    } else if (showAccept == true) {
+                                                        html += '&nbsp' + '<h4 style="color: rgb(0, 162, 255);">(Waiting)</h4>';
+                                                    } else {
+                                                        html += '&nbsp' + '<h4 style="color: rgb(0, 162, 255);">(Pending)</h4>';
+                                                    }
+                                                    
+                                                }
+                                            }
+                                        html += '</li>';
+                                    html += '<ul>';
+                                    
+                                html += '</div>';
+
+
+                                html += '<div class="friend_action_div" id="action_div_' + data._id + '">';
+                                    if (isMe) {
+                                        html += "";
+                                    } else {
+                                        if (isFriend) {
+                                            if (showAccept) {
+                                                html += '<a id="search_action2" href="javascript:void(0);" data-id="' + data._id + '" onclick="doAccept(this);" class="add-butn accept-btn">Accept</a>';
+                                                html += '<a id="search_action" style="margin-right: 10px;" href="javascript:void(0);" data-id="' + data._id + '" onclick="doUnfriend(this);" class="add-butn unfriend-btn">Unfriend</a>';
+                                            } else {
+                                                html += '<a id="search_action" href="javascript:void(0);" data-id="' + data._id + '" onclick="doUnfriend(this);" class="add-butn unfriend-btn">Unfriend</a>';
+                                            }
+                                        } else {
+                                            html += '<a id="search_action" href="javascript:void(0);" data-id="' + data._id + '" onclick="sendFriendRequest(this);" class="add-butn">Add Friend</a>';
+                                        }
+                                    }
+                                    
+                                html += '</div>';
+
+                            html += '<div>';
+                        html += '</li>';
+                    }
+
+                    document.getElementById("showUsers").innerHTML = html;
+                }
+            }
+        };
+        
+        var formData = new FormData();
+        ajax.send(formData);
+    }
+
+    function doAccept(self) {
+        var _id = self.getAttribute("data-id");
+
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/acceptFriendRequest", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                alert(response.message);
+
+                self.remove();
+
+                var status_id = "friend_status_" + _id;
+                document.getElementById(status_id).innerHTML = '&nbsp' + '<h4 style="color: rgb(0, 162, 255);">(Friend)</h4>';
+            }
+        };
+
+        var formData = new FormData();
+        formData.append("accessToken", localStorage.getItem("accessToken"));
+        formData.append("_id", _id);
+        ajax.send(formData);
+    }
+
+    function sendFriendRequest(self) {
+        var _id = self.getAttribute("data-id");
+
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/sendFriendRequest", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                alert(response.message);
+
+                self.remove();
+                var div_id = "action_div_" + _id;
+                document.getElementById(div_id).innerHTML = '<a id="search_action" href="javascript:void(0);" data-id="' + _id + '" onclick="doUnfriend(this);" class="add-butn unfriend-btn">Unfriend</a>';
+
+                var status_id = "friend_status_" + _id;
+                document.getElementById(status_id).innerHTML = '&nbsp' + '<h4 style="color: rgb(0, 162, 255);">(Pending)</h4>';
+            }
+        };
+
+        var formData = new FormData();
+        formData.append("accessToken", localStorage.getItem("accessToken"));
+        formData.append("_id", _id);
+
+        ajax.send(formData);
+    }
+
+    function doUnfriend(self) {
+        var _id = self.getAttribute("data-id");
+
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/unfriend", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                alert(response.message);
+
+                self.remove();
+                var div_id = "action_div_" + _id;
+                document.getElementById(div_id).innerHTML = '<a id="search_action" href="javascript:void(0);" data-id="' + _id + '" onclick="sendFriendRequest(this);" class="add-butn">Add Friend</a>';
+
+                var status_id = "friend_status_" + _id;
+                document.getElementById(status_id).innerHTML = '';
+            }
+        };
+
+        var formData = new FormData();
+        formData.append("accessToken", localStorage.getItem("accessToken"));
+        formData.append("_id", _id);
+        ajax.send(formData);
+    }
+
+
+</script>
+
+<%- include ("includes/footer") %>

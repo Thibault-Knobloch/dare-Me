@@ -1,0 +1,51 @@
+* {
+    background-color: black;
+    color: white;
+}
+
+#signup_div {
+    /* border: red solid 2px; */
+    margin: auto;
+    max-width: 400px;
+    margin-top: 100px;
+
+    border-bottom: 2px rgb(72, 209, 68) dotted;
+    border-top: 2px rgb(72, 209, 68) dotted;
+    
+}
+
+#signup_text {
+    text-align: center;
+    color: rgb(72, 209, 68);
+    font-size: 32px;
+}
+
+#signup_button {
+    background-color: rgb(174, 248, 0);
+    color: white;
+    width: 85px;
+    height: 35px;
+    border-radius: 50px;
+    margin-top: 30px;
+}
+#signup_button:hover {
+    cursor: pointer;
+}
+
+#signup_button_text {
+    color: black;
+    font-weight: bold;
+    background-color: rgb(174, 248, 0);
+}
+
+.signup_input_item {
+    text-align: center;
+}
+
+#signup_div input {
+    float: center;
+}
+
+.radio_input:hover {
+    cursor: pointer;
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Social Network</title>
+        <link rel="stylesheet" href="/public/css/signup.css">
+    </head>
+
+    <body>
+        <%- include ("includes/header") %>
+        <div id="signup_container_div">
+            <div id="signup_div">
+                <h2 id="signup_text">Signup</h2>
+                <form onsubmit="return doRegister(this);">
+                    <div class="signup_input_item">
+                        <label>Full Name:</label>
+                        <input type="text" required name="name" />
+                    </div>
+
+                    <div class="signup_input_item">
+                        <label>User Name:</label>
+                        <input type="text" required name="username" />
+                    </div>
+
+                    <div class="signup_input_item">
+                        <label>Email:</label>
+                        <input type="email" required name="email" />
+                    </div>
+
+                    <div class="signup_input_item">
+                        <label>Password:</label>
+                        <input type="password" required name="password" />
+                    </div>
+
+                    <div class="signup_input_item">
+                        <div>
+                            <label>
+                                <i></i> Male
+                                <input class="radio_input" type="radio" name="gender" value="Male" checked />
+                            </label>
+                        </div>
+
+                        <div>
+                            <label>
+                                <i></i> Female
+                                <input class="radio_input" type="radio" name="gender" value="Female" />
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button name="submit" type="submit" id="signup_button">
+                            <span id="signup_button_text">Register</span>
+                        </button>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px; margin-bottom: 15px;">
+                        <a href="/login" style="color: rgb(72, 209, 68);">Already have an account?</a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <div id="signup_copyright_div" style="margin-left: 10px; position: absolute; bottom: 10px;">
+            <div>
+                Dare-Me &copy; <%= new Date().getFullYear() %>
+            </div>
+        </div>
+
+        <script>
+            function doRegister(form) {
+                form.submit.setAttribute("disabled", "disabled");
+                form.submit.innerHTML = "<span>Loading...</span>";
+
+                var ajax = new XMLHttpRequest();
+                ajax.open("POST", "/signup", true);
+
+                ajax.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        form.submit.removeAttribute("disabled");
+                        form.submit.innerHTML = "<span>Register</span>";
+
+                        var response = JSON.parse(this.responseText);
+                        alert(response.message);
+
+                        if (response.status == "success") {
+                            window.location.href = "/login";
+                        }
+                    }
+                };
+
+                ajax.send(new FormData(form));
+                return false;
+            }
+        </script>
+
+    </body>
+
+</html>

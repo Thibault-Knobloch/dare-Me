@@ -1,0 +1,275 @@
+
+#post_box_pp {
+    height: 50px;
+    width: 50px;
+    border-radius: 25px;
+    border: rgb(158, 196, 22) 2px solid;
+    position: relative;
+}
+
+#top_inner_div {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    display: flex;
+    border-radius: 60px;
+}
+#top_inner_pp {
+    position: relative;
+    display: inline-block;
+    border-radius: 60px;
+}
+#top_inner_textarea {
+    position: relative;
+    display: inline-block;
+    flex: 1;
+    padding-right: 15px;
+    border-radius: 60px;
+}
+
+#post_box_text_input {
+    position: relative;
+    height: 50px;
+    width: 100%;
+    font-size:17px;
+    border-radius: 60px;
+    border:2px solid rgb(158, 196, 22);
+    padding-left: 25px;
+    padding-top: 10px;
+    outline: none;
+    margin-top: 17px;
+}
+
+.pp-input_container {
+    width: 100%;
+}
+
+.add_post_li {
+    flex: 1;
+}
+
+#add-post-box {
+    margin-bottom: 70px;
+    max-width: 900px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.attachements {
+    width: 90%;
+    border-radius: 30px;
+}
+
+.post_box_container {
+    border-radius: 30px;
+    box-shadow: 6px 6px 20px greenyellow, 7px 0px 10px greenyellow inset;
+    display: inline-block;
+    width: 80%;
+    margin: auto;
+    margin-top: 60px;
+    min-width: 510px;
+}
+
+#post_button {
+    background-color: rgb(206, 252, 0);
+    color: rgb(0, 0, 0);
+    height: 40;
+    width: 110;
+    border-radius: 40px;
+    font-weight: bold;
+    font-size: 20px;
+    float: right;
+    margin-bottom: 15px;
+}
+
+#post_button:hover {
+    cursor: pointer;
+    height: 41;
+    width: 111;
+    background-color: rgb(213, 255, 24);
+}
+
+#post_file_input {
+    display: none;
+}
+
+.post_div {
+    margin-bottom: 40px;
+    margin-top: 30px;
+    min-width: 400px;
+    width: 40%;
+    text-align: left;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 40px;
+    padding: 30px;
+    box-shadow: 5px 5px 25px greenyellow;
+}
+
+.post_pp_div {
+    float: left;
+    margin-left: -20px;
+    margin-top: -20px;
+}
+#post_pp {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    object-fit: cover;
+}
+
+#timestamp {
+    display: block;
+    margin-top: 5px;
+}
+
+.post-meta {
+    display: inline-block;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.like_section_div {
+    width: 100%;
+    text-align:left;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 40px;
+    margin-bottom: -30px;
+}
+#like_div {
+    width: calc(100% / 4);  
+    display: inline-block;
+    vertical-align: top; 
+    text-align:left;
+    margin:2%;    
+}
+#comment_div {
+    width: calc(100% / 4);  
+    display: inline-block;
+    vertical-align: top; 
+    text-align:left;
+    margin:2%;    
+}
+#share_div {
+    width: calc(100% / 4);  
+    display: inline-block;
+    vertical-align: top; 
+    text-align:left;
+    margin:2%;    
+}
+.post_meta_number {
+    margin-left: 10px;
+    font-style: normal;
+    text-decoration: none;
+}
+.post_meta_number_div {
+    padding-top: 3px;
+}
+
+.post_image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    background-color: rgb(19, 19, 19);
+}
+.post_video {
+    width: 400px;
+}
+
+#comment_button:hover {
+    cursor: pointer;
+}
+
+#newsfeed-container {
+    width: 100%;
+    flex: 1;
+    margin: auto;
+    height: 85vh;
+    overflow: auto;
+    text-align: center;
+}
+#newsfeed-container2 {
+    width: 100%;
+    flex: 1;
+    margin: auto;
+    text-align: center;
+}
+#sidebar-container {
+    float: left;
+    flex: 1;
+    max-width: 200px;
+    overflow: auto;
+    height: 85vh;
+}
+
+#page-contents {
+    display: flex;
+}
+
+.material-icons {
+    color: white;
+    font-size: 12px;
+}
+.Iliked {
+    color: greenyellow;
+}
+#search_icon {
+    color: rgb(72, 209, 68);
+    font-size: 20px;
+    padding-top: 3px;
+}
+
+.material-icons:hover {
+    cursor: pointer;
+}
+
+.post_distinction {
+    position: absolute;
+    width: 150px;
+    top: 0px;
+    right: 0px;
+}
+
+.post_user_div {
+    width: 100%; 
+    position: relative; 
+    height: 50px; 
+    display: inline-block;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.dare_meta:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#dare_pp {
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+}
+
+.dare_list_div {
+    width: 280px;
+    max-height: 200px;
+    overflow-y: scroll;
+    position: absolute;
+    bottom: 80px; 
+    right: 10px; 
+    z-index: 5; 
+    border: 2px solid greenyellow; 
+    border-radius: 15px;
+}
+
