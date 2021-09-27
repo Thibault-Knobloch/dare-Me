@@ -722,6 +722,16 @@
                     document.getElementById(bp_now_current_dare).innerHTML = Number(response.bp_current);
                     document.getElementById("dare_range_input").value = 1;
                     document.getElementById("range_output").innerHTML = 1;
+
+                    var dare_list_div = "dares_list_" + response.dare._id;
+                    var html2 = "";
+                    for (var i = 0; i < response.dare.dares.length; i++) {
+                        var darer = response.dare.dares[i];
+                        html2 += "BABABA";
+                    }
+                    alert("went after loop");
+                    
+                    document.getElementById(dare_list_div).innerHTML = html2;
                     
                     if (response.dare_status == "closed") {
                         var html = "";
@@ -738,11 +748,6 @@
                         var form_id = "submit-dare_" + response.dareID;
                         document.getElementById(form_id).style.display = "none";
 
-                        // this does not work
-                        var dare_list_div = "dares_list_" + response.dare._id;
-                        var html2 = "BABABA";
-                        
-                        document.getElementById(dare_list_div).innerHTML = html2;
                     }
                 }
             }

@@ -1586,8 +1586,6 @@ http.listen(3000, function() {
                                                 "dare": thisdare
                                             });
                                         });
-
-
                                     } else {
                                         database.collection("posts").findOne({
                                             $and: [{
