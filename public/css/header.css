@@ -131,6 +131,8 @@ a {
     margin-left: -150px;
     width: 300px;
     height: 150px;
+    border: greenyellow 2px solid;
+    border-radius: 10px;
 }
 
 #search_button {
@@ -176,3 +178,4 @@ a {
 .radio_input:checked {
     background-color: rgb(72, 209, 68);
 }
+

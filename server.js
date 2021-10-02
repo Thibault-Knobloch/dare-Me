@@ -1021,93 +1021,22 @@ http.listen(3000, function() {
                                             "replies": []
                                         }
                                     }
+                                }, function (error, data) {
+                                    database.collection("posts").findOne({
+                                        "_id": ObjectId(_id)
+                                    }, function (error, thispost) {
+                                        result.json({
+                                            "status": "success",
+                                            "message": "Comment has been posted",
+                                            "comment": comment,
+                                            "user": user,
+                                            "createdAt": createdAt,
+                                            "post_id": _id,
+                                            "new_num": (post.comments.length + 1)
+                                        });
+                                    });
                                 });
 
-                                result.json({
-                                    "status": "success",
-                                    "message": "Comment has been posted"
-                                });
-                            });
-                        }
-                    });
-                }
-            });
-        });
-
-        app.post("/postReply", function(request, result) {
-            var accessToken = request.fields.accessToken;
-            var postID = request.fields.postID;
-            var commentID = request.fields.commentID;
-            var reply = request.fields.reply;
-            var createdAt = new Date().getTime();
-
-            database.collection("users").findOne({
-                "accessToken": accessToken
-            }, function (error, user) {
-                if (user == null) {
-                    result.json({
-                        "status": "error",
-                        "message": "User has been logged out. Please login again."
-                    });
-                } else {
-                    database.collection("posts").findOne({
-                        "_id": ObjectId(postID)
-                    }, function(error, post) {
-                        if (post == null) {
-                            result.json({
-                                "status": "error",
-                                "message": "Post does not exist."
-                            });
-                        } else {
-                            var replyID = ObjectId();
-
-                            database.collection("posts").updateOne({
-                                $and: [{
-                                    "_id": ObjectId(postID)
-                                }, {
-                                    "comment._id": ObjectId(commentID)
-                                }]
-                            }, {
-                                $push: {
-                                    "comments.$.replies": {
-                                        "_id": replyID,
-                                        "user": {
-                                            "_id": user._id,
-                                            "name": user.name,
-                                            "profileImage": user.profileImage,
-                                        },
-                                        "reply": reply,
-                                        "createdAt": createdAt
-                                    }
-                                }
-                            }, function(error, data) {
-                                database.collection("users").updateOne({
-                                    $and: [{
-                                        "_id": post.user._id
-                                    }, {
-                                        "posts._id": post._id
-                                    }, {
-                                        "posts.comments._id": ObjectId(commentID)
-                                    }]
-                                }, {
-                                    $push: {
-                                        "posts.$[].comments.$[].replies": {
-                                            "_id": replyID,
-                                            "user": {
-                                                "_id": user._id,
-                                                "name": user.name,
-                                                "profileImage": user.profileImage,
-                                            },
-                                            "reply": reply,
-                                            "createdAt": createdAt
-                                        }
-                                    }
-                                });
-
-                                result.json({
-                                    "status": "success",
-                                    "message": "Reply has been posted."
-                                });
                             });
                         }
                     });
