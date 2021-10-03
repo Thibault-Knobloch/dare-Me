@@ -531,6 +531,173 @@
             commentSection.style.display = "none";
         }
 
+        function doDare(form) {
+        
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/addDare", true);
+
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+                alert(response.message);
+
+                if (response.status == "success") {
+                    bp_now_current_dare = "dare_bp_now_" + response.dareID;
+                    document.getElementById(bp_now_current_dare).innerHTML = Number(response.bp_current);
+                    document.getElementById("dare_range_input").value = 1;
+                    document.getElementById("range_output").innerHTML = 1;
+
+                    var html2 = "";
+                    
+                    if (response.new_dare == true) {
+                        //was a new dare, insert new dare in the div
+                        var list_id = "dare_ul_" + response.dare._id;
+                        var darer = response.darer;
+                        html2 += '<div style="margin-bottom: 15px;" id="darer_meta_' + darer._id + '">';
+                            html2 += '<li style="margin-left: -30px; display: flex;">';
+                                html2 += '<div style="width: 200px; display: flex;">';
+                                    html2 += '<div>';
+                                        html2 += '<img id="dare_pp" src="' + mainURL + '/' + darer.profileImage + '">';
+                                    html2 += '</div>';
+
+                                    html2 += '<div style="margin-top: 8px;">';
+                                        html2 += '<a style="margin-left: 5px; padding-bottom: 50px;" href="/user/' + darer._id + '">' + darer.name + '</a>';
+                                    html2 += '</div>';
+                                html2 += '</div>';
+                                
+                                html2 += '<div style="display: flex; width: 80px; height: 40px; margin-top: -10px;">';
+                                    html2 += '<h3 style="margin-bottom: 5px;" id="darer_meta_amount_' + darer._id + '_' + response.dare._id + '">' + response.bp_dared + '</h3>';
+                                    html2 += '<img style="display: inline; width: 19px; height: 19px; margin-left: 7px; margin-top: 20px; float: right;" src="/public/images/blue_point.png">';
+                                html2 += '</div>';
+                            html2 += '</li>';
+                        html2 += '</div>';
+
+                        if (response.bp_before == 0) {
+                            document.getElementById(list_id).innerHTML = html2;
+                        } else {
+                            document.getElementById(list_id).insertAdjacentHTML("beforeend", html2);
+                        }
+
+                    } else if (response.new_dare == false) {
+                        //was not a new dare, increment existing div
+                        var inc_id = "darer_meta_amount_" + response.darer._id + "_" + response.dare._id;
+                        var number = Number(document.getElementById(inc_id).innerHTML);
+                        var inc_num = number + response.bp_dared;
+                        document.getElementById(inc_id).innerHTML = inc_num;
+                    }
+                                        
+                    if (response.dare_status == "closed") {
+                        var html = "";
+
+                        html += '<span style="margin-left: 4px; font-size: 21px;">' + response.bp_goal;
+                        html += '<img style="width: 19px; margin-left: 7px; margin-bottom: -2px;" src="/public/images/blue_point.png"></span>';
+                        
+                        var meta_id = "dare_meta_" + response.dareID;
+                        document.getElementById(meta_id).innerHTML = html;
+
+                        var distinction_id = "distinction_text_" + response.dareID;
+                        document.getElementById(distinction_id).insertAdjacentHTML('beforeend', " READY");
+
+                        var form_id = "submit-dare_" + response.dareID;
+                        document.getElementById(form_id).style.display = "none";
+
+                    }
+                }
+            }
+        };
+
+        var formData = new FormData(form);
+        formData.append("accessToken", localStorage.getItem("accessToken"));
+        
+        ajax.send(formData);
+        return false;
+
+    }
+
+    function voteAccepted(self) {
+        
+        var dareID = self.getAttribute("data-id");
+        var didReject = self.getAttribute("data-bool");
+
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/dareAccepted", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+                alert(response.message);
+                alert(response.completed_status);
+
+                if (response.status == "success") {
+                    var element_id = "meta_completed_" + dareID;
+                    document.getElementById(element_id).innerHTML = response.data.accepted.length + "/" + response.data.dare_users;
+
+                    if (response.completed_status == "accepted") {
+                        var div_id = "completed_meta_div_" + dareID;
+                        html = ""
+                        html += '<div style="float:right;" data-id="' + response.data._id + '" class="dare_meta" onclick="showDareDiv(this);">';
+                            html += '<span style="margin-left: 4px; font-size: 21px;">' + response.data.bp_goal;
+                            html += '<img style="width: 19px; margin-left: 7px; margin-bottom: -5px;" src="/public/images/blue_point.png"></span>';
+                        html += '</div>';
+                        document.getElementById(div_id).innerHTML = '<span style="float: left; color: green;">DARE ACCEPTED</span>' + html;
+                        
+                        var distinction_id = "distinction_text_" + dareID;
+                        document.getElementById(distinction_id).innerHTML = "DARE ACCEPTED";
+                    }
+                }
+            }
+        };
+
+        var formData = new FormData();
+        formData.append("accessToken", localStorage.getItem("accessToken"));
+        formData.append("dareID", dareID);
+        formData.append("didReject", didReject);
+        ajax.send(formData);
+        
+    }
+
+    function voteRejected(self) {
+        
+        var dareID = self.getAttribute("data-id");
+        var didAccept = self.getAttribute("data-bool");
+
+        var ajax = new XMLHttpRequest();
+        ajax.open("POST", "/dareRejected", true);
+
+        ajax.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = JSON.parse(this.responseText);
+                alert(response.message);
+
+                if (response.status == "success") {
+                    var element_id = "meta_completed_" + dareID;
+                    document.getElementById(element_id).innerHTML = response.data.accepted.length + "/" + response.data.dare_users;
+
+                    if (response.completed_status == "rejected") {
+                        var div_id = "completed_meta_div_" + dareID;
+                        html = ""
+                        html += '<div style="float:right;" data-id="' + response.data._id + '" class="dare_meta" onclick="showDareDiv(this);">';
+                            html += '<span style="margin-left: 4px; font-size: 21px;">' + response.data.bp_goal;
+                            html += '<img style="width: 19px; margin-left: 7px; margin-bottom: -5px;" src="/public/images/blue_point.png"></span>';
+                        html += '</div>';
+                        document.getElementById(div_id).innerHTML = '<span style="float: left; color: red;">DARE REJECTED</span>' + html;
+
+                        var distinction_id = "distinction_text_" + dareID;
+                        document.getElementById(distinction_id).innerHTML = "DARE REJECTED";
+                    }
+                }
+            }
+        };
+
+        var formData = new FormData();
+        formData.append("accessToken", localStorage.getItem("accessToken"));
+        formData.append("dareID", dareID);
+        formData.append("didAccept", didAccept);
+        ajax.send(formData);
+
+    }
+
     </script>
 
     <style>

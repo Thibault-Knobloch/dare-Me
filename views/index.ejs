@@ -191,13 +191,13 @@
                             html += '</div>';
 
                             html += '<div id="dares_list_' + data._id + '" class="dare_list_div" style="display: none;">';
-                                html += '<ul style="display: block;">';
+                                html += '<ul style="display: block;" id="dare_ul_' + data._id + '">';
                                     if (data.dares.length == 0) {
                                         html += '<li style="color: white; margin-left: -25px;">No dares yet. Be the first one to dare!</li>';
                                     } else {
                                         for (var i = 0; i < data.dares.length; i++) {
                                             var darer = data.dares[i];
-                                            html += '<div style="margin-bottom: 15px;">';
+                                            html += '<div style="margin-bottom: 15px;" id="darer_meta_' + darer._id + '">';
                                                 html += '<li style="margin-left: -30px; display: flex;">';
                                                     html += '<div style="width: 200px; display: flex;">';
                                                         html += '<div>';
@@ -210,7 +210,7 @@
                                                     html += '</div>';
                                                     
                                                     html += '<div style="display: flex; width: 80px; height: 40px; margin-top: -10px;">';
-                                                        html += '<h3 style="margin-bottom: 5px;">' + darer.bp_dared + '</h3>';
+                                                        html += '<h3 style="margin-bottom: 5px;" id="darer_meta_amount_' + darer._id + '_' + data._id + '">' + darer.bp_dared + '</h3>';
                                                         html += '<img style="display: inline; width: 19px; height: 19px; margin-left: 7px; margin-top: 20px; float: right;" src="/public/images/blue_point.png">';
                                                     html += '</div>';
                                                 html += '</li>';
@@ -348,13 +348,13 @@
                             html += '</div>';
 
                             html += '<div id="dares_list_' + data._id + '" class="dare_list_div" style="display: none;">';
-                                html += '<ul style="display: block;">';
+                                html += '<ul style="display: block;" id="dare_ul_' + data._id + '">';
                                     if (data.dares.length == 0) {
                                         html += '<li style="color: white; margin-left: -25px;">No dares yet. Be the first one to dare!</li>';
                                     } else {
                                         for (var i = 0; i < data.dares.length; i++) {
                                             var darer = data.dares[i];
-                                            html += '<div style="margin-bottom: 15px;">';
+                                            html += '<div style="margin-bottom: 15px;" id="darer_meta_' + darer._id + '">';
                                                 html += '<li style="margin-left: -30px; display: flex;">';
                                                     html += '<div style="width: 200px; display: flex;">';
                                                         html += '<div>';
@@ -367,8 +367,8 @@
                                                     html += '</div>';
                                                     
                                                     html += '<div style="display: flex; width: 80px; height: 40px; margin-top: -10px;">';
-                                                        html += '<h3>' + darer.bp_dared + '</h3>';
-                                                        html += '<img style="width: 19px; height: 19px; margin-left: 5px; margin-top: 18px;" src="/public/images/blue_point.png">';
+                                                        html += '<h3 style="margin-bottom: 5px;" id="darer_meta_amount_' + darer._id + '_' + data._id + '">' + darer.bp_dared + '</h3>';
+                                                        html += '<img style="display: inline; width: 19px; height: 19px; margin-left: 7px; margin-top: 20px; float: right;" src="/public/images/blue_point.png">';
                                                     html += '</div>';
                                                 html += '</li>';
                                             html += '</div>';
@@ -379,7 +379,104 @@
 
                         html += '</div>';
 
-                    }    
+                    } else if (data.distinction == "share") {
+                        html += '<div id="postdiv" class="post_div" style="position: relative; max-width: 600px; min-width: 450px;">';
+                            html += '<div>';
+                                html += '<div class="post_content_div">';
+                                    html += '<div class="post_user_div">';
+                                        html += '<div class="post_pp_div">';
+                                            html += '<figure>';
+                                                html += '<img id="post_pp" src="' + mainURL + '/' + data.user.profileImage + '">';
+                                            html += '</figure>';
+                                        html += '</div>';
+
+                                        html += '<div class="friend-name">';
+                                            html += '<ins>';
+                                                html += '<a href="/user/' + data.user._id + '">';
+                                                    html += data.user.name;
+                                                html += '</a>';
+                                            html += '</ins>'; 
+                                        html += '</div>';
+                                            
+                                        var createdAt = new Date(data.createdAt);
+                                        var date = createdAt.getDate() + "";
+                                        date = date.padStart(2, "0") + " " + months[createdAt.getMonth()] + ", " + createdAt.getFullYear();
+                                        html += '<div id="timestamp">';
+                                            html += '<span style="color: rgb(141, 141, 141);">' + date + '</span>';
+                                        html += '</div>';
+
+                                        html += '<div class="post_distinction2">';
+                                            html += '<span style="display: block; color: white; text-align: right; font-size: 18px;">' + data.distinction.toUpperCase() + 'D</span>';
+                                            html += '<span style="display: block; text-align: right;">From: <a href="/user/' + data.from._id + '">' + data.from.name + '</a></span>';
+                                        html += '</div>';
+                                        
+                                    html += '</div>';
+                                    
+                                    var dared_amount = 0;
+                                    for (var i = 0; i < data.dares.length; i++) {
+                                        var darer = data.dares[i];
+                                        dared_amount += darer.bp_dared;
+                                    }
+
+                                    html += '<div class="post-meta">';
+                                        html += '<div class="description">';
+                                            html += '<p style="font-size: 16px;">';
+                                                html += data.caption;
+                                            html += '</p>';
+                                        html += '</div>';
+
+                                        if (data.image != "") {
+                                            html += '<img class="post_image" src="' + mainURL + '/' + data.image + '">';
+                                        }
+                                        if (data.video != "") {
+                                            html += '<video class="post_video" style="height: 359px; width: 100%;" controls src="' + mainURL + '/' + data.video + '"></video>';
+                                        }
+                                        html += '<div style="margin-bottom: 40px; margin-top: 10px;">';
+                                            html += '<div style="float:right;" data-id="' + data._id + '" class="dare_meta" onclick="showDareDiv(this);">';
+                                                html += '<span style="margin-left: 4px; font-size: 21px;">' + dared_amount + ' / ' + data.bp_goal;
+                                                html += '<img style="width: 19px; margin-left: 7px; margin-bottom: -5px;" src="/public/images/blue_point.png"></span>';
+                                            html += '</div>';
+                                        html += '</div>';
+
+                                        html += createLikesSection(data);
+                                    html += '</div>';
+                                html += '</div>';
+
+                                html += createCommentsSection(data);
+                            html += '</div>';
+
+                            html += '<div id="dares_list_' + data._id + '" class="dare_list_div" style="display: none;">';
+                                html += '<ul style="display: block;" id="dare_ul_' + data._id + '">';
+                                    if (data.dares.length == 0) {
+                                        html += '<li style="color: white; margin-left: -25px;">No dares yet. Be the first one to dare!</li>';
+                                    } else {
+                                        for (var i = 0; i < data.dares.length; i++) {
+                                            var darer = data.dares[i];
+                                            html += '<div style="margin-bottom: 15px;" id="darer_meta_' + darer._id + '">';
+                                                html += '<li style="margin-left: -30px; display: flex;">';
+                                                    html += '<div style="width: 200px; display: flex;">';
+                                                        html += '<div>';
+                                                            html += '<img id="dare_pp" src="' + mainURL + '/' + darer.profileImage + '">';
+                                                        html += '</div>';
+
+                                                        html += '<div style="margin-top: 8px;">';
+                                                            html += '<a style="margin-left: 5px; padding-bottom: 50px;" href="/user/' + darer._id + '">' + darer.name + '</a>';
+                                                        html += '</div>';
+                                                    html += '</div>';
+                                                    
+                                                    html += '<div style="display: flex; width: 80px; height: 40px; margin-top: -10px;">';
+                                                        html += '<h3 style="margin-bottom: 5px;" id="darer_meta_amount_' + darer._id + '_' + data._id + '">' + darer.bp_dared + '</h3>';
+                                                        html += '<img style="display: inline; width: 19px; height: 19px; margin-left: 7px; margin-top: 20px; float: right;" src="/public/images/blue_point.png">';
+                                                    html += '</div>';
+                                                html += '</li>';
+                                            html += '</div>';
+                                        } 
+                                    }
+                                html += '</ul>';
+                            html += '</div>';
+
+                        html += '</div>';
+                    }
                 }
 
                 posts_loaded = response.data.length;
@@ -690,7 +787,104 @@
 
                         html += '</div>';
 
-                    }    
+                    } else if (data.distinction == "share") {
+                        html += '<div id="postdiv" class="post_div" style="position: relative; max-width: 600px; min-width: 450px;">';
+                            html += '<div>';
+                                html += '<div class="post_content_div">';
+                                    html += '<div class="post_user_div">';
+                                        html += '<div class="post_pp_div">';
+                                            html += '<figure>';
+                                                html += '<img id="post_pp" src="' + mainURL + '/' + data.user.profileImage + '">';
+                                            html += '</figure>';
+                                        html += '</div>';
+
+                                        html += '<div class="friend-name">';
+                                            html += '<ins>';
+                                                html += '<a href="/user/' + data.user._id + '">';
+                                                    html += data.user.name;
+                                                html += '</a>';
+                                            html += '</ins>'; 
+                                        html += '</div>';
+                                            
+                                        var createdAt = new Date(data.createdAt);
+                                        var date = createdAt.getDate() + "";
+                                        date = date.padStart(2, "0") + " " + months[createdAt.getMonth()] + ", " + createdAt.getFullYear();
+                                        html += '<div id="timestamp">';
+                                            html += '<span style="color: rgb(141, 141, 141);">' + date + '</span>';
+                                        html += '</div>';
+
+                                        html += '<div class="post_distinction2">';
+                                            html += '<span style="display: block; color: white; text-align: right; font-size: 18px;">' + data.distinction.toUpperCase() + 'D</span>';
+                                            html += '<span style="display: block; text-align: right;">From: <a href="/user/' + data.from._id + '">' + data.from.name + '</a></span>';
+                                        html += '</div>';
+                                        
+                                    html += '</div>';
+                                    
+                                    var dared_amount = 0;
+                                    for (var i = 0; i < data.dares.length; i++) {
+                                        var darer = data.dares[i];
+                                        dared_amount += darer.bp_dared;
+                                    }
+
+                                    html += '<div class="post-meta">';
+                                        html += '<div class="description">';
+                                            html += '<p style="font-size: 16px;">';
+                                                html += data.caption;
+                                            html += '</p>';
+                                        html += '</div>';
+
+                                        if (data.image != "") {
+                                            html += '<img class="post_image" src="' + mainURL + '/' + data.image + '">';
+                                        }
+                                        if (data.video != "") {
+                                            html += '<video class="post_video" style="height: 359px; width: 100%;" controls src="' + mainURL + '/' + data.video + '"></video>';
+                                        }
+                                        html += '<div style="margin-bottom: 40px; margin-top: 10px;">';
+                                            html += '<div style="float:right;" data-id="' + data._id + '" class="dare_meta" onclick="showDareDiv(this);">';
+                                                html += '<span style="margin-left: 4px; font-size: 21px;">' + dared_amount + ' / ' + data.bp_goal;
+                                                html += '<img style="width: 19px; margin-left: 7px; margin-bottom: -5px;" src="/public/images/blue_point.png"></span>';
+                                            html += '</div>';
+                                        html += '</div>';
+
+                                        html += createLikesSection(data);
+                                    html += '</div>';
+                                html += '</div>';
+
+                                html += createCommentsSection(data);
+                            html += '</div>';
+
+                            html += '<div id="dares_list_' + data._id + '" class="dare_list_div" style="display: none;">';
+                                html += '<ul style="display: block;" id="dare_ul_' + data._id + '">';
+                                    if (data.dares.length == 0) {
+                                        html += '<li style="color: white; margin-left: -25px;">No dares yet. Be the first one to dare!</li>';
+                                    } else {
+                                        for (var i = 0; i < data.dares.length; i++) {
+                                            var darer = data.dares[i];
+                                            html += '<div style="margin-bottom: 15px;" id="darer_meta_' + darer._id + '">';
+                                                html += '<li style="margin-left: -30px; display: flex;">';
+                                                    html += '<div style="width: 200px; display: flex;">';
+                                                        html += '<div>';
+                                                            html += '<img id="dare_pp" src="' + mainURL + '/' + darer.profileImage + '">';
+                                                        html += '</div>';
+
+                                                        html += '<div style="margin-top: 8px;">';
+                                                            html += '<a style="margin-left: 5px; padding-bottom: 50px;" href="/user/' + darer._id + '">' + darer.name + '</a>';
+                                                        html += '</div>';
+                                                    html += '</div>';
+                                                    
+                                                    html += '<div style="display: flex; width: 80px; height: 40px; margin-top: -10px;">';
+                                                        html += '<h3 style="margin-bottom: 5px;" id="darer_meta_amount_' + darer._id + '_' + data._id + '">' + darer.bp_dared + '</h3>';
+                                                        html += '<img style="display: inline; width: 19px; height: 19px; margin-left: 7px; margin-top: 20px; float: right;" src="/public/images/blue_point.png">';
+                                                    html += '</div>';
+                                                html += '</li>';
+                                            html += '</div>';
+                                        } 
+                                    }
+                                html += '</ul>';
+                            html += '</div>';
+
+                        html += '</div>';
+                    }  
                 } // end for loop
 
                 posts_loaded += (response.data.length - posts_loaded);
@@ -706,143 +900,7 @@
         ajax.send(formData);
     }
 
-    function doDare(form) {
-        
-        var ajax = new XMLHttpRequest();
-        ajax.open("POST", "/addDare", true);
-
-
-        ajax.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var response = JSON.parse(this.responseText);
-                alert(response.message);
-
-                if (response.status == "success") {
-                    bp_now_current_dare = "dare_bp_now_" + response.dareID;
-                    document.getElementById(bp_now_current_dare).innerHTML = Number(response.bp_current);
-                    document.getElementById("dare_range_input").value = 1;
-                    document.getElementById("range_output").innerHTML = 1;
-
-                    var dare_list_div = "dares_list_" + response.dare._id;
-                    var html2 = "";
-                    for (var i = 0; i < response.dare.dares.length; i++) {
-                        var darer = response.dare.dares[i];
-                        html2 += "BABABA";
-                    }
-                    alert("went after loop");
-                    
-                    document.getElementById(dare_list_div).innerHTML = html2;
-                    
-                    if (response.dare_status == "closed") {
-                        var html = "";
-
-                        html += '<span style="margin-left: 4px; font-size: 21px;">' + response.bp_goal;
-                        html += '<img style="width: 19px; margin-left: 7px; margin-bottom: -2px;" src="/public/images/blue_point.png"></span>';
-                        
-                        var meta_id = "dare_meta_" + response.dareID;
-                        document.getElementById(meta_id).innerHTML = html;
-
-                        var distinction_id = "distinction_text_" + response.dareID;
-                        document.getElementById(distinction_id).insertAdjacentHTML('beforeend', " READY");
-
-                        var form_id = "submit-dare_" + response.dareID;
-                        document.getElementById(form_id).style.display = "none";
-
-                    }
-                }
-            }
-        };
-
-        var formData = new FormData(form);
-        formData.append("accessToken", localStorage.getItem("accessToken"));
-        
-        ajax.send(formData);
-        return false;
-
-    }
-
-    function voteAccepted(self) {
-        
-        var dareID = self.getAttribute("data-id");
-        var didReject = self.getAttribute("data-bool");
-
-        var ajax = new XMLHttpRequest();
-        ajax.open("POST", "/dareAccepted", true);
-
-        ajax.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var response = JSON.parse(this.responseText);
-                alert(response.message);
-                alert(response.completed_status);
-
-                if (response.status == "success") {
-                    var element_id = "meta_completed_" + dareID;
-                    document.getElementById(element_id).innerHTML = response.data.accepted.length + "/" + response.data.dare_users;
-
-                    if (response.completed_status == "accepted") {
-                        var div_id = "completed_meta_div_" + dareID;
-                        html = ""
-                        html += '<div style="float:right;" data-id="' + response.data._id + '" class="dare_meta" onclick="showDareDiv(this);">';
-                            html += '<span style="margin-left: 4px; font-size: 21px;">' + response.data.bp_goal;
-                            html += '<img style="width: 19px; margin-left: 7px; margin-bottom: -5px;" src="/public/images/blue_point.png"></span>';
-                        html += '</div>';
-                        document.getElementById(div_id).innerHTML = '<span style="float: left; color: green;">DARE ACCEPTED</span>' + html;
-                        
-                        var distinction_id = "distinction_text_" + dareID;
-                        document.getElementById(distinction_id).innerHTML = "DARE ACCEPTED";
-                    }
-                }
-            }
-        };
-
-        var formData = new FormData();
-        formData.append("accessToken", localStorage.getItem("accessToken"));
-        formData.append("dareID", dareID);
-        formData.append("didReject", didReject);
-        ajax.send(formData);
-        
-    }
-
-    function voteRejected(self) {
-        
-        var dareID = self.getAttribute("data-id");
-        var didAccept = self.getAttribute("data-bool");
-
-        var ajax = new XMLHttpRequest();
-        ajax.open("POST", "/dareRejected", true);
-
-        ajax.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var response = JSON.parse(this.responseText);
-                alert(response.message);
-
-                if (response.status == "success") {
-                    var element_id = "meta_completed_" + dareID;
-                    document.getElementById(element_id).innerHTML = response.data.accepted.length + "/" + response.data.dare_users;
-
-                    if (response.completed_status == "rejected") {
-                        var div_id = "completed_meta_div_" + dareID;
-                        html = ""
-                        html += '<div style="float:right;" data-id="' + response.data._id + '" class="dare_meta" onclick="showDareDiv(this);">';
-                            html += '<span style="margin-left: 4px; font-size: 21px;">' + response.data.bp_goal;
-                            html += '<img style="width: 19px; margin-left: 7px; margin-bottom: -5px;" src="/public/images/blue_point.png"></span>';
-                        html += '</div>';
-                        document.getElementById(div_id).innerHTML = '<span style="float: left; color: red;">DARE REJECTED</span>' + html;
-
-                        var distinction_id = "distinction_text_" + dareID;
-                        document.getElementById(distinction_id).innerHTML = "DARE REJECTED";
-                    }
-                }
-            }
-        };
-
-        var formData = new FormData();
-        formData.append("accessToken", localStorage.getItem("accessToken"));
-        formData.append("dareID", dareID);
-        formData.append("didAccept", didAccept);
-        ajax.send(formData);
-
-    }
+    
 
 
 </script>

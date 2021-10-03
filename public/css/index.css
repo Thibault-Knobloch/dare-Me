@@ -233,6 +233,13 @@
     right: 0px;
 }
 
+.post_distinction2 {
+    position: absolute;
+    width: 250px;
+    top: 0px;
+    right: 0px;
+}
+
 .post_user_div {
     width: 100%; 
     position: relative; 

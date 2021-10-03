@@ -578,9 +578,6 @@ http.listen(3000, function() {
                         });
                     }
                 });
-
-                //make dare_open of referenced dareID dare to false, to prevent 2 completed submission at same time
-                //MAYBE NOT, DECIDE. reopen the dare if if is rejected (will be in separate server call, becuase here we do not check for accepted/rejected we just post)
                 
             }
             
@@ -1084,10 +1081,18 @@ http.listen(3000, function() {
                                     "image": post.image,
                                     "video": post.video,
                                     "type": "posta",
+                                    "distinction": "share",
                                     "createdAt": createdAt,
                                     "likers": [],
                                     "comments": [],
                                     "shares": [],
+                                    "dares": post.dares,
+                                    "bp_goal": post.bp_goal,
+                                    "from": {
+                                        "_id": post.user._id,
+                                        "name": post.user.name,
+                                        "profileImage": post.user.profileImage,
+                                    }, 
                                     "user": {
                                         "_id": user._id,
                                         "name": user.name,
@@ -1417,58 +1422,52 @@ http.listen(3000, function() {
     
                                 var bp_before = Number(post.bp_now);
                                 var bp_goal = Number(post.bp_goal);
+                                var new_dare = false;
 
                                 database.collection("posts").findOne({
                                     $and: [{
                                         "dareID": dareID
                                     }, {
                                         "distinction": "dare"
+                                    }, {
+                                        "dares._id": user._id
                                     }]
-                                }, function (error, data) {
-                                    database.collection("posts").findOne({
-                                        $and: [{
-                                            "dareID": dareID
-                                        }, {
-                                            "distinction": "dare"
-                                        }, {
-                                            "dares._id": user._id
-                                        }]
-                                        
-                                    }, function (error, darer) {
-                                        
-                                        if (darer == null) {
-                                            database.collection("posts").updateOne({
-                                                $and: [{
-                                                    "dareID": dareID
-                                                }, {
-                                                    "distinction": "dare"
-                                                }]
+                                    
+                                }, function (error, darer) {
+                                    
+                                    if (darer == null) {
+                                        new_dare = true;
+                                        database.collection("posts").updateOne({
+                                            $and: [{
+                                                "dareID": dareID
                                             }, {
-                                                $push: {
-                                                    "dares": {
-                                                        "_id": user._id,
-                                                        "name": user.name,
-                                                        "profileImage": user.profileImage,
-                                                        "bp_dared": bp_dare
-                                                    }
+                                                "distinction": "dare"
+                                            }]
+                                        }, {
+                                            $push: {
+                                                "dares": {
+                                                    "_id": user._id,
+                                                    "name": user.name,
+                                                    "profileImage": user.profileImage,
+                                                    "bp_dared": bp_dare
                                                 }
-                                            });
-                                        } else {
-                                            database.collection("posts").updateOne({
-                                                $and: [{
-                                                    "dareID": dareID
-                                                }, {
-                                                    "distinction": "dare"
-                                                }, {
-                                                    "dares._id": user._id
-                                                }]
+                                            }
+                                        });
+                                    } else {
+                                        database.collection("posts").updateOne({
+                                            $and: [{
+                                                "dareID": dareID
                                             }, {
-                                                $inc: {
-                                                    "dares.$.bp_dared": bp_dare
-                                                }
-                                            });
-                                        }
-                                    });
+                                                "distinction": "dare"
+                                            }, {
+                                                "dares._id": user._id
+                                            }]
+                                        }, {
+                                            $inc: {
+                                                "dares.$.bp_dared": bp_dare
+                                            }
+                                        });
+                                    }
                                 });
 
                                 database.collection("posts").updateOne({
@@ -1504,7 +1503,6 @@ http.listen(3000, function() {
                                                 "distinction": "dare"
                                             }]
                                         }, function(error, dare) {
-                                            var thisdare = dare;
                                             result.json({
                                                 "status": "success",
                                                 "message": "Dare has been submitted.",
@@ -1512,7 +1510,11 @@ http.listen(3000, function() {
                                                 "bp_current": (bp_before + bp_dare),
                                                 "bp_goal": bp_goal,
                                                 "dare_status": "closed",
-                                                "dare": thisdare
+                                                "dare": post,
+                                                "new_dare": new_dare,
+                                                "darer": user,
+                                                "bp_dared": bp_dare,
+                                                "bp_before": bp_before
                                             });
                                         });
                                     } else {
@@ -1523,7 +1525,6 @@ http.listen(3000, function() {
                                                 "distinction": "dare"
                                             }]
                                         }, function(error, dare) {
-                                            var thisdare = dare;
                                             result.json({
                                                 "status": "success",
                                                 "message": "Dare has been submitted.",
@@ -1531,7 +1532,11 @@ http.listen(3000, function() {
                                                 "bp_current": (bp_before + bp_dare),
                                                 "bp_goal": bp_goal,
                                                 "dare_status": "open",
-                                                "dare": thisdare
+                                                "dare": post,
+                                                "new_dare": new_dare,
+                                                "darer": user,
+                                                "bp_dared": bp_dare,
+                                                "bp_before": bp_before
                                             });
                                         });
 
